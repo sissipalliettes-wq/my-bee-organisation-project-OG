@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TaskBar — Bee Edition</title>
+  <meta name="description" content="A calm task manager with a bee companion, nectar rewards, and a focus timer.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ══════════════════════════════════════════
+       LEFT — TASK SIDEBAR
+  ══════════════════════════════════════════ -->
+  <div class="sidebar sidebar-tasks" id="sidebar-tasks">
+    <header class="app-header">
+      <div class="brand-row">
+        <span class="leaf-icon">🌿</span>
+        <h1 class="brand-title">Today's Tasks</h1>
+      </div>
+      <div class="progress-card">
+        <div class="progress-info">
+          <span class="progress-label">Progress</span>
+          <span class="progress-percent" id="progress-percent">0%</span>
+        </div>
+        <div class="progress-bar-track">
+          <div class="progress-bar-fill" id="progress-bar-fill" style="width:0%"></div>
+        </div>
+        <div class="progress-meta">
+          <span id="tasks-count">0 of 0 done</span>
+          <button id="clear-completed-btn" class="text-link">Clear done</button>
+        </div>
+      </div>
+    </header>
+
+    <section class="controls-section">
+      <div class="search-box">
+        <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="search-input" placeholder="Search tasks…" autocomplete="off">
+        <button id="clear-search-btn" class="clear-search-btn" style="display:none">&times;</button>
+      </div>
+      <div class="filter-tabs">
+        <button class="filter-tab active" data-filter="all" id="filter-all">All</button>
+        <button class="filter-tab" data-filter="active" id="filter-active">Active</button>
+        <button class="filter-tab" data-filter="completed" id="filter-completed">Done</button>
+      </div>
+    </section>
+
+    <main class="tasks-area">
+      <div id="empty-state" class="empty-state">
+        <div class="empty-illustration">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M8 12l2 2 4-4"/></svg>
+        </div>
+        <p class="empty-title" id="empty-title">All clear!</p>
+        <p class="empty-subtitle" id="empty-subtitle">Add a task below to get started.</p>
+      </div>
+      <ul id="tasks-list" class="tasks-list"></ul>
+    </main>
+
+    <section class="task-creator-panel">
+      <form id="task-form" autocomplete="off">
+        <div class="input-row">
+          <input type="text" id="task-input" placeholder="Add a task…" required maxlength="120">
+          <button type="submit" class="submit-btn" aria-label="Add task">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </button>
+        </div>
+      </form>
+    </section>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       CENTER — BEE STAGE
+  ══════════════════════════════════════════ -->
+  <div class="center-panel" id="center-panel">
+
+    <!-- Nectar badge -->
+    <div class="nectar-badge" id="nectar-badge">
+      <span class="nectar-icon">🍯</span>
+      <span class="nectar-count" id="nectar-count">0</span>
+    </div>
+
+    <!-- Bee Stage -->
+    <div class="bee-stage">
+
+      <!-- Speech bubble -->
+      <div class="speech-bubble hidden" id="speech-bubble">
+        <span id="speech-text">Hello! I'm Bzzle 🐝</span>
+        <div class="bubble-tail"></div>
+      </div>
+
+      <!-- Bee wrapper: state classes applied here -->
+      <div class="bee-wrapper" id="bee-wrapper">
+
+        <!-- THE BEE (inline SVG for CSS animation) -->
+        <svg class="bee-svg" viewBox="0 0 100 140" xmlns="http://www.w3.org/2000/svg" id="bee-svg">
+          <defs>
+            <radialGradient id="yg" cx="38%" cy="32%" r="68%">
+              <stop offset="0%" stop-color="#FFE96B"/>
+              <stop offset="100%" stop-color="#F5A800"/>
+            </radialGradient>
+            <filter id="softdrop" x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-color="rgba(0,0,0,0.12)"/>
+            </filter>
+          </defs>
+
+          <!-- Wings (separate group for flap animation) -->
+          <g class="bee-wings" id="bee-wings">
+            <ellipse class="wing-l" cx="27" cy="55" rx="25" ry="13"
+              fill="rgba(190,220,255,0.5)" stroke="rgba(140,185,225,0.65)" stroke-width="1.2"/>
+            <ellipse class="wing-r" cx="73" cy="55" rx="25" ry="13"
+              fill="rgba(190,220,255,0.5)" stroke="rgba(140,185,225,0.65)" stroke-width="1.2"/>
+          </g>
+
+          <!-- Body stripes -->
+          <ellipse cx="50" cy="98" rx="24" ry="30" fill="url(#yg)" filter="url(#softdrop)"/>
+          <ellipse cx="50" cy="92"  rx="23" ry="8" fill="#1f1f1f" opacity="0.72"/>
+          <ellipse cx="50" cy="106" rx="23" ry="8" fill="#1f1f1f" opacity="0.72"/>
+          <ellipse cx="50" cy="119" rx="18" ry="6" fill="#1f1f1f" opacity="0.58"/>
+          <!-- stinger -->
+          <ellipse cx="50" cy="127" rx="6" ry="4" fill="#F5A800"/>
+
+          <!-- Head -->
+          <circle cx="50" cy="42" r="23" fill="url(#yg)" stroke="#e59b00" stroke-width="0.8" filter="url(#softdrop)"/>
+
+          <!-- Eyes -->
+          <circle cx="40.5" cy="38" r="5" fill="#1f1f1f"/>
+          <circle cx="59.5" cy="38" r="5" fill="#1f1f1f"/>
+          <circle cx="42"   cy="36" r="2" fill="white"/>
+          <circle cx="61"   cy="36" r="2" fill="white"/>
+
+          <!-- Smile (happy) -->
+          <path class="bee-smile" d="M40 48 Q50 57 60 48" stroke="#1f1f1f" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+
+          <!-- Cheeks -->
+          <ellipse cx="35" cy="45" rx="5" ry="4" fill="#FF8FAB" opacity="0.42"/>
+          <ellipse cx="65" cy="45" rx="5" ry="4" fill="#FF8FAB" opacity="0.42"/>
+
+          <!-- Antennae -->
+          <line x1="44" y1="21" x2="34" y2="6" stroke="#333" stroke-width="1.9" stroke-linecap="round"/>
+          <circle cx="33" cy="5" r="3.5" fill="#F5A800" stroke="#333" stroke-width="0.7"/>
+          <line x1="56" y1="21" x2="66" y2="6" stroke="#333" stroke-width="1.9" stroke-linecap="round"/>
+          <circle cx="67" cy="5" r="3.5" fill="#F5A800" stroke="#333" stroke-width="0.7"/>
+
+          <!-- Left arm group -->
+          <g class="bee-arm-l" id="bee-arm-l">
+            <line x1="28" y1="90" x2="14" y2="108" stroke="#F5A800" stroke-width="3.5" stroke-linecap="round"/>
+            <circle cx="14" cy="109.5" r="3.5" fill="#F5A800"/>
+          </g>
+
+          <!-- Right arm group -->
+          <g class="bee-arm-r" id="bee-arm-r">
+            <line x1="72" y1="90" x2="86" y2="108" stroke="#F5A800" stroke-width="3.5" stroke-linecap="round"/>
+            <circle cx="86" cy="109.5" r="3.5" fill="#F5A800"/>
+          </g>
+
+          <!-- Feet -->
+          <line x1="42" y1="124" x2="37" y2="133" stroke="#333" stroke-width="1.8" stroke-linecap="round"/>
+          <line x1="58" y1="124" x2="63" y2="133" stroke="#333" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+
+        <!-- ══ PROP: PHONE ══ -->
+        <div class="prop prop-phone hidden" id="prop-phone">
+          <svg viewBox="0 0 44 72" class="phone-svg" xmlns="http://www.w3.org/2000/svg">
+            <rect x="1" y="1" width="42" height="70" rx="7" fill="#222" stroke="#555" stroke-width="1.5"/>
+            <rect x="4" y="10" width="36" height="52" rx="3" fill="#4A90D9"/>
+            <!-- TikTok-style content bars -->
+            <rect x="7" y="13" width="30" height="4" rx="2" fill="rgba(255,255,255,0.3)"/>
+            <rect x="7" y="20" width="22" height="3" rx="2" fill="rgba(255,255,255,0.2)"/>
+            <rect x="7" y="32" width="30" height="4" rx="2" fill="rgba(255,255,255,0.3)"/>
+            <rect x="7" y="39" width="18" height="3" rx="2" fill="rgba(255,255,255,0.2)"/>
+            <rect x="7" y="51" width="30" height="4" rx="2" fill="rgba(255,255,255,0.3)"/>
+            <!-- Home button bar -->
+            <rect x="15" y="65" width="14" height="3" rx="1.5" fill="#555"/>
+          </svg>
+          <div class="scroll-timer-label" id="scroll-timer-label">30:00</div>
+        </div>
+
+        <!-- ══ PROP: FOOD ══ -->
+        <div class="prop prop-food hidden" id="prop-food">
+          <div class="food-emoji">🍪</div>
+        </div>
+
+        <!-- ══ PROP: GIFT / PACKAGE ══ -->
+        <div class="prop prop-gift hidden" id="prop-gift">
+          <!-- Phase 1: Box closed -->
+          <div class="gift-phase gift-box" id="gift-phase-box">
+            <svg viewBox="0 0 70 60" class="box-svg" xmlns="http://www.w3.org/2000/svg">
+              <!-- Box body -->
+              <rect x="5" y="20" width="60" height="38" rx="3" fill="#C97A3A" stroke="#8B5520" stroke-width="1.5"/>
+              <!-- Lid -->
+              <rect class="box-lid" id="box-lid" x="3" y="10" width="64" height="16" rx="3" fill="#B86A28" stroke="#8B5520" stroke-width="1.5"/>
+              <!-- Amazon arrow tape -->
+              <rect x="30" y="10" width="10" height="48" fill="#F5A623" opacity="0.6"/>
+              <path d="M 8 38 Q 20 45 35 42 Q 50 39 62 46" stroke="#F5A623" stroke-width="1.8" fill="none" stroke-linecap="round" opacity="0.7"/>
+              <!-- Amazon smile logo -->
+              <path d="M 18 50 Q 35 58 52 50" stroke="#F5A623" stroke-width="2" fill="none" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <!-- Phase 2: Honey jar -->
+          <div class="gift-phase gift-honey hidden" id="gift-phase-honey">
+            <div class="honey-jar-wrapper">
+              <svg viewBox="0 0 60 80" class="honey-jar-svg" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <radialGradient id="honeygr" cx="35%" cy="30%" r="70%">
+                    <stop offset="0%" stop-color="#FFE566"/>
+                    <stop offset="100%" stop-color="#F5A800"/>
+                  </radialGradient>
+                </defs>
+                <!-- Cap -->
+                <rect x="16" y="4" width="28" height="12" rx="4" fill="#8B5520"/>
+                <!-- Jar body -->
+                <path d="M12,16 Q8,16 7,22 L5,62 Q5,68 10,68 L50,68 Q55,68 55,62 L53,22 Q52,16 48,16 Z" fill="url(#honeygr)" stroke="#e59b00" stroke-width="1.2"/>
+                <!-- Honey shimmer -->
+                <ellipse cx="30" cy="35" rx="14" ry="5" fill="rgba(255,255,255,0.18)" transform="rotate(-10, 30, 35)"/>
+                <!-- Drip -->
+                <path d="M 28 68 Q 30 76 32 68" fill="#F5A800"/>
+                <!-- Label -->
+                <rect x="14" y="42" width="32" height="20" rx="3" fill="rgba(255,255,255,0.55)"/>
+                <text x="30" y="55" text-anchor="middle" font-size="8" fill="#8B5520" font-family="serif" font-weight="bold">HONEY</text>
+              </svg>
+              <div class="sparkle-burst" id="sparkle-burst">✨🌟✨</div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- end bee-wrapper -->
+
+      <!-- Sparkles field (JS-injected) -->
+      <div class="sparkle-field" id="sparkle-field"></div>
+
+      <!-- Shop button -->
+      <button class="shop-btn" id="shop-btn" title="Open the Nectar Shop">
+        <span class="shop-btn-icon">🏪</span>
+        <span>Shop</span>
+      </button>
+
+      <!-- Scroll timer display (below bee, when phone mode active) -->
+      <div class="scroll-timer-display hidden" id="scroll-timer-display">
+        <span>📱 Scroll time left:</span>
+        <strong id="scroll-time-left">30:00</strong>
+      </div>
+
+    </div><!-- end bee-stage -->
+  </div><!-- end center-panel -->
+
+  <!-- ══════════════════════════════════════════
+       RIGHT — TIMER + IDEAS SIDEBAR
+  ══════════════════════════════════════════ -->
+  <div class="sidebar sidebar-ideas" id="sidebar-ideas">
+
+    <!-- Hourglass Timer -->
+    <section class="timer-section">
+      <div class="hourglass-wrapper" id="hourglass-wrapper" title="Click to start/pause">
+        <svg class="hourglass-svg" viewBox="0 0 80 120" xmlns="http://www.w3.org/2000/svg">
+          <path class="hg-frame" d="M10,8 L70,8 L70,16 Q70,16 40,52 Q10,88 10,88 L10,96 L70,96 L70,88 Q70,88 40,52 Q10,16 10,16 Z"/>
+          <clipPath id="topClip">
+            <path d="M12,16 L68,16 Q68,16 40,52 Q12,88 12,88 L12,16 Z"/>
+          </clipPath>
+          <rect class="hg-sand-top" id="hg-sand-top" x="12" y="16" width="56" height="36" clip-path="url(#topClip)"/>
+          <clipPath id="bottomClip">
+            <path d="M12,88 Q12,88 40,52 Q68,16 68,88 L12,88 Z"/>
+          </clipPath>
+          <rect class="hg-sand-bottom" id="hg-sand-bottom" x="12" y="88" width="56" height="0" clip-path="url(#bottomClip)"/>
+          <line class="hg-trickle" id="hg-trickle" x1="40" y1="52" x2="40" y2="52"/>
+          <rect class="hg-cap" x="8" y="4" width="64" height="10" rx="4"/>
+          <rect class="hg-cap" x="8" y="106" width="64" height="10" rx="4"/>
+        </svg>
+      </div>
+      <div class="timer-controls">
+        <div class="timer-display" id="timer-display">25:00</div>
+        <div class="timer-btn-row">
+          <button class="timer-btn" id="timer-start-pause">Start</button>
+          <button class="timer-btn secondary" id="timer-reset">Reset</button>
+        </div>
+        <div class="timer-presets">
+          <button class="preset-btn" data-minutes="5" id="preset-5">5m</button>
+          <button class="preset-btn active" data-minutes="25" id="preset-25">25m</button>
+          <button class="preset-btn" data-minutes="45" id="preset-45">45m</button>
+          <button class="preset-btn" data-minutes="60" id="preset-60">60m</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Ideas Notepad -->
+    <section class="ideas-section">
+      <div class="ideas-header">
+        <span class="leaf-icon small">🌱</span>
+        <h2 class="ideas-title">Spontaneous Ideas</h2>
+      </div>
+      <p class="ideas-hint">Capture what comes to mind — revisit later.</p>
+      <div class="ideas-input-row">
+        <input type="text" id="idea-input" class="idea-input" placeholder="What's on your mind?" maxlength="200" autocomplete="off">
+        <button class="idea-add-btn" id="idea-add-btn" aria-label="Add idea">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+      </div>
+      <ul id="ideas-list" class="ideas-list"></ul>
+      <div id="ideas-empty" class="ideas-empty">
+        <p>Your ideas will bloom here 🌸</p>
+      </div>
+    </section>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SHOP MODAL
+  ══════════════════════════════════════════ -->
+  <div class="shop-overlay hidden" id="shop-overlay">
+    <div class="shop-modal" role="dialog" aria-modal="true" aria-label="Nectar Shop">
+      <div class="shop-header">
+        <div class="shop-title-row">
+          <span>🏪</span>
+          <h2 class="shop-title">Nectar Shop</h2>
+        </div>
+        <button class="shop-close-btn" id="shop-close-btn" aria-label="Close shop">✕</button>
+      </div>
+      <div class="shop-balance">
+        You have <strong id="shop-nectar-count">0</strong> <span>🍯</span> nectars
+      </div>
+      <div class="shop-items">
+
+        <!-- Item: Scrolling -->
+        <div class="shop-item" id="shop-item-scroll">
+          <div class="item-emoji">📱</div>
+          <div class="item-info">
+            <div class="item-name">30 min scrolling</div>
+            <div class="item-desc">Take a guilt-free social media break</div>
+          </div>
+          <div class="item-right">
+            <div class="item-cost"><span class="cost-num">5</span> 🍯</div>
+            <button class="buy-btn" id="buy-scroll" data-cost="5" data-item="scroll">Buy</button>
+          </div>
+        </div>
+
+        <!-- Item: Sweet snack -->
+        <div class="shop-item" id="shop-item-snack">
+          <div class="item-emoji">🍪</div>
+          <div class="item-info">
+            <div class="item-name">Sweet snack</div>
+            <div class="item-desc">Treat yourself to something yummy!</div>
+          </div>
+          <div class="item-right">
+            <div class="item-cost"><span class="cost-num">3</span> 🍯</div>
+            <button class="buy-btn" id="buy-snack" data-cost="3" data-item="snack">Buy</button>
+          </div>
+        </div>
+
+        <!-- Item: Gift -->
+        <div class="shop-item" id="shop-item-gift">
+          <div class="item-emoji">🎁</div>
+          <div class="item-info">
+            <div class="item-name">Gift for yourself</div>
+            <div class="item-desc">Open a special Amazon package 📦🍯</div>
+          </div>
+          <div class="item-right">
+            <div class="item-cost"><span class="cost-num">15</span> 🍯</div>
+            <button class="buy-btn" id="buy-gift" data-cost="15" data-item="gift">Buy</button>
+          </div>
+        </div>
+
+      </div><!-- end shop-items -->
+    </div><!-- end shop-modal -->
+  </div><!-- end shop-overlay -->
+
+  <script src="app.js" type="module"></script>
+</body>
+</html>

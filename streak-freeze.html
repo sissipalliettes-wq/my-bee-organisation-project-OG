@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Streak Rewards — Bee Edition</title>
+  <meta name="description" content="Claim a weekly streak freeze from the beehive.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="freeze-page">
+  <main class="freeze-card">
+    <p class="leaf-icon" aria-hidden="true">🌿</p>
+    <h1>Streak Rewards</h1>
+    <p>Open the beehive once each week to claim a streak freeze for a missed day.</p>
+
+    <button class="beehive-btn" id="beehive-btn" aria-label="Open weekly beehive reward">🍯</button>
+    <div class="freeze-status" id="freeze-status"></div>
+    <p>You have <span class="freeze-count" id="freeze-count">0</span> streak freeze(s).</p>
+
+    <section class="freeze-progress" aria-label="This week's daily streak progress">
+      <div class="streak-widget-title">
+        <span>This week</span>
+        <span id="streak-count">0/7</span>
+      </div>
+      <div class="streak-jars" id="daily-streak-widget">
+        <div class="streak-jar"><span class="jar-icon"></span><span>Mon</span></div>
+        <div class="streak-jar"><span class="jar-icon"></span><span>Tue</span></div>
+        <div class="streak-jar"><span class="jar-icon"></span><span>Wed</span></div>
+        <div class="streak-jar"><span class="jar-icon"></span><span>Thu</span></div>
+        <div class="streak-jar"><span class="jar-icon"></span><span>Fri</span></div>
+        <div class="streak-jar"><span class="jar-icon"></span><span>Sat</span></div>
+        <div class="streak-jar"><span class="jar-icon"></span><span>Sun</span></div>
+      </div>
+    </section>
+
+    <button class="freeze-claim-btn" id="freeze-claim-btn">Claim this week’s freeze</button>
+    <br>
+    <a class="back-home-btn" href="index.html">Back to tasks</a>
+  </main>
+
+  <script src="app.js" type="module"></script>
+</body>
+</html>

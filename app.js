@@ -338,11 +338,6 @@ function openRoulette() {
   if (spinBtn) spinBtn.disabled = false;
 }
 
-  createRouletteWheel(activeTasks);
-  $('#roulette-overlay').classList.remove('hidden');
-  $('#roulette-spin-btn').disabled = false;
-}
-
 function closeRoulette() {
   $('#roulette-overlay').classList.add('hidden');
   $('#roulette-segments').innerHTML = '';

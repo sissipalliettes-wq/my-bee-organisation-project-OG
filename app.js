@@ -488,7 +488,7 @@ function wireFreezePage() {
     count.textContent = state.freezes;
     claimButton.disabled = claimed;
     beehive.disabled = claimed;
-    status.textContent = claimed ? 'You already opened the beehive this week. Come back next week!' : 'Open the beehive to claim this week's streak freeze.';
+    status.textContent = claimed ? 'You already opened the beehive this week. Come back next week!' : "Open the beehive to claim this week's streak freeze.";
   };
 
   const claim = () => {

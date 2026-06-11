@@ -525,3 +525,6 @@ input { width: 100%; min-width: 0; border: 0; background: transparent; outline: 
   background: linear-gradient(#ffd86b, var(--honey));
   transition: height 0.25s ease;
 }
+.streak-widget-inline .streak-jar span.jar-icon {
+  display: block !important;
+}

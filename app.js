@@ -304,19 +304,40 @@ function buyItem(item, cost) {
   }
 }
 
+// 1. Tell the browser that the wheel is NOT spinning when the page first loads
+let isRouletteSpinning = false; 
+
+// 2. The corrected function to OPEN the popup window
 function openRoulette() {
   if (isRouletteSpinning) return;
   
-  const activeTasks = tasks.filter(t => !t.done);
+  // Grab your list of tasks safely
+  const taskList = (typeof tasks !== 'undefined') ? tasks : [];
+  const activeTasks = taskList.filter(t => !t.done);
   
+  // If you have NO tasks, show the empty hive message
   if (activeTasks.length === 0) {
-    const modal = $('#roulette-modal');
-    const segments = $('#roulette-segments');
-    segments.innerHTML = '<div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; width: 80%; color: var(--muted); font-size: 1.1rem;"><div class="roulette-empty-message-emoji">🍯</div><div class="roulette-empty-message">No tasks in the hive yet! 🍯</div></div>';
-    $('#roulette-spin-btn').disabled = true;
-    $('#roulette-overlay').classList.remove('hidden');
+    const segments = document.getElementById('roulette-segments');
+    if (segments) {
+      segments.innerHTML = '<div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; width: 80%; color: var(--muted); font-size: 1.1rem;"><div class="roulette-empty-message-emoji">🍯</div><div class="roulette-empty-message">No tasks in the hive yet! 🍯</div></div>';
+    }
+    const spinBtn = document.getElementById('roulette-spin-btn');
+    if (spinBtn) spinBtn.disabled = true;
+    
+    const overlay = document.getElementById('roulette-overlay');
+    if (overlay) overlay.classList.remove('hidden');
     return;
   }
+
+  // If you DO have tasks, build the wheel and show the window!
+  createRouletteWheel(activeTasks);
+  
+  const overlay = document.getElementById('roulette-overlay');
+  if (overlay) overlay.classList.remove('hidden');
+  
+  const spinBtn = document.getElementById('roulette-spin-btn');
+  if (spinBtn) spinBtn.disabled = false;
+}
 
   createRouletteWheel(activeTasks);
   $('#roulette-overlay').classList.remove('hidden');
@@ -353,32 +374,48 @@ function createRouletteWheel(taskList) {
   });
 }
 
+// 3. The corrected function to SPIN the wheel
 function spinRoulette() {
   if (isRouletteSpinning) return;
   
-  const activeTasks = tasks.filter(t => !t.done);
+  const taskList = (typeof tasks !== 'undefined') ? tasks : [];
+  const activeTasks = taskList.filter(t => !t.done);
   if (activeTasks.length === 0) return;
 
   isRouletteSpinning = true;
-  $('#roulette-spin-btn').disabled = true;
   
-  const wheel = $('#roulette-wheel');
+  const spinBtn = document.getElementById('roulette-spin-btn');
+  if (spinBtn) spinBtn.disabled = true; // Lock button during spin
+  
+  const wheel = document.getElementById('roulette-wheel');
+  if (!wheel) return;
+
+  // Calculate the physics of the spin
   const spins = 5 + Math.random() * 3;
   const randomIndex = Math.floor(Math.random() * activeTasks.length);
   const anglePerSegment = 360 / activeTasks.length;
   const finalAngle = spins * 360 + (randomIndex * anglePerSegment);
 
+  // Reset the wheel to 0 degrees first
   wheel.style.transition = 'none';
   wheel.style.transform = 'rotate(0deg)';
 
+  // Start the beautiful spinning animation
   setTimeout(() => {
     wheel.style.transition = `transform ${2.5 + Math.random() * 0.5}s cubic-bezier(0.17, 0.67, 0.12, 0.98)`;
     wheel.style.transform = `rotate(${finalAngle}deg)`;
 
+    // Wait 3 seconds for the wheel to stop spinning
     setTimeout(() => {
-      showPlankAnimation(activeTasks[randomIndex]);
+      // FIX: Grab just the TEXT of the winning task instead of the whole object package!
+      const winningTaskText = activeTasks[randomIndex].text || "A mystery bee task! 🐝";
+      
+      if (typeof showPlankAnimation === 'function') {
+        showPlankAnimation(winningTaskText);
+      }
+      
       isRouletteSpinning = false;
-      $('#roulette-spin-btn').disabled = false;
+      if (spinBtn) spinBtn.disabled = false; // Unlock button
     }, 3000);
   }, 50);
 }

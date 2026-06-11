@@ -20,6 +20,7 @@
       <div class="brand-row">
         <span class="leaf-icon">🌿</span>
         <h1 class="brand-title">Today's Tasks</h1>
+        <button class="roulette-btn" id="roulette-btn" title="Spin task roulette">🎡</button>
       </div>
       <div class="progress-card">
         <div class="progress-info">
@@ -38,7 +39,7 @@
 
     <section class="controls-section">
       <div class="search-box">
-        <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx[...]
         <input type="text" id="search-input" placeholder="Search tasks…" autocomplete="off">
         <button id="clear-search-btn" class="clear-search-btn" style="display:none">&times;</button>
       </div>
@@ -52,7 +53,7 @@
     <main class="tasks-area">
       <div id="empty-state" class="empty-state">
         <div class="empty-illustration">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M8 12l2 2 4-4"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C6.48 2 2 6.[...]
         </div>
         <p class="empty-title" id="empty-title">All clear!</p>
         <p class="empty-subtitle" id="empty-subtitle">Add a task below to get started.</p>
@@ -65,7 +66,7 @@
         <div class="input-row">
           <input type="text" id="task-input" placeholder="Add a task…" required maxlength="120">
           <button type="submit" class="submit-btn" aria-label="Add task">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2=[...]
           </button>
         </div>
       </form>
@@ -227,16 +228,40 @@
           </div>
         </div>
 
+        <!-- ══ PROP: WOODEN PLANK (for roulette) ══ -->
+        <div class="prop prop-plank hidden" id="prop-plank">
+          <div class="wooden-plank">
+            <div class="plank-text" id="plank-text">Task name</div>
+          </div>
+        </div>
+
       </div><!-- end bee-wrapper -->
 
       <!-- Sparkles field (JS-injected) -->
       <div class="sparkle-field" id="sparkle-field"></div>
+
+      <!-- Roulette Overlay -->
+      <div class="roulette-overlay hidden" id="roulette-overlay">
+        <div class="roulette-modal">
+          <button class="roulette-close" id="roulette-close" aria-label="Close roulette">✕</button>
+          <div class="roulette-spinner">
+            <div class="roulette-wheel" id="roulette-wheel">
+              <div class="roulette-segments" id="roulette-segments"></div>
+            </div>
+            <div class="roulette-pointer"></div>
+          </div>
+          <button class="roulette-spin-btn" id="roulette-spin-btn">SPIN!</button>
+        </div>
+      </div>
 
       <!-- Shop button -->
       <button class="shop-btn" id="shop-btn" title="Open the Nectar Shop">
         <span class="shop-btn-icon">🏪</span>
         <span>Shop</span>
       </button>
+
+      <!-- Calendar button -->
+      <button class="calendar-btn" id="calendar-btn" title="Open calendar">📅</button>
 
       <!-- Scroll timer display (below bee, when phone mode active) -->
       <div class="scroll-timer-display hidden" id="scroll-timer-display">
@@ -252,38 +277,60 @@
   ══════════════════════════════════════════ -->
   <div class="sidebar sidebar-ideas" id="sidebar-ideas">
 
-    <!-- Hourglass Timer -->
-    <section class="timer-section">
-      <div class="hourglass-wrapper" id="hourglass-wrapper" title="Click to start/pause">
-        <svg class="hourglass-svg" viewBox="0 0 80 120" xmlns="http://www.w3.org/2000/svg">
-          <path class="hg-frame" d="M10,8 L70,8 L70,16 Q70,16 40,52 Q10,88 10,88 L10,96 L70,96 L70,88 Q70,88 40,52 Q10,16 10,16 Z"/>
-          <clipPath id="topClip">
-            <path d="M12,16 L68,16 Q68,16 40,52 Q12,88 12,88 L12,16 Z"/>
-          </clipPath>
-          <rect class="hg-sand-top" id="hg-sand-top" x="12" y="16" width="56" height="36" clip-path="url(#topClip)"/>
-          <clipPath id="bottomClip">
-            <path d="M12,88 Q12,88 40,52 Q68,16 68,88 L12,88 Z"/>
-          </clipPath>
-          <rect class="hg-sand-bottom" id="hg-sand-bottom" x="12" y="88" width="56" height="0" clip-path="url(#bottomClip)"/>
-          <line class="hg-trickle" id="hg-trickle" x1="40" y1="52" x2="40" y2="52"/>
-          <rect class="hg-cap" x="8" y="4" width="64" height="10" rx="4"/>
-          <rect class="hg-cap" x="8" y="106" width="64" height="10" rx="4"/>
-        </svg>
-      </div>
-      <div class="timer-controls">
-        <div class="timer-display" id="timer-display">25:00</div>
-        <div class="timer-btn-row">
-          <button class="timer-btn" id="timer-start-pause">Start</button>
-          <button class="timer-btn secondary" id="timer-reset">Reset</button>
+    <!-- Daily Streak + Ideas Container -->
+    <div class="streak-ideas-container">
+
+      <!-- Hourglass Timer -->
+      <section class="timer-section">
+        <div class="hourglass-wrapper" id="hourglass-wrapper" title="Click to start/pause">
+          <svg class="hourglass-svg" viewBox="0 0 80 120" xmlns="http://www.w3.org/2000/svg">
+            <path class="hg-frame" d="M10,8 L70,8 L70,16 Q70,16 40,52 Q10,88 10,88 L10,96 L70,96 L70,88 Q70,88 40,52 Q10,16 10,16 Z"/>
+            <clipPath id="topClip">
+              <path d="M12,16 L68,16 Q68,16 40,52 Q12,88 12,88 L12,16 Z"/>
+            </clipPath>
+            <rect class="hg-sand-top" id="hg-sand-top" x="12" y="16" width="56" height="36" clip-path="url(#topClip)"/>
+            <clipPath id="bottomClip">
+              <path d="M12,88 Q12,88 40,52 Q68,16 68,88 L12,88 Z"/>
+            </clipPath>
+            <rect class="hg-sand-bottom" id="hg-sand-bottom" x="12" y="88" width="56" height="0" clip-path="url(#bottomClip)"/>
+            <line class="hg-trickle" id="hg-trickle" x1="40" y1="52" x2="40" y2="52"/>
+            <rect class="hg-cap" x="8" y="4" width="64" height="10" rx="4"/>
+            <rect class="hg-cap" x="8" y="106" width="64" height="10" rx="4"/>
+          </svg>
         </div>
-        <div class="timer-presets">
-          <button class="preset-btn" data-minutes="5" id="preset-5">5m</button>
-          <button class="preset-btn active" data-minutes="25" id="preset-25">25m</button>
-          <button class="preset-btn" data-minutes="45" id="preset-45">45m</button>
-          <button class="preset-btn" data-minutes="60" id="preset-60">60m</button>
+        <div class="timer-controls">
+          <div class="timer-display" id="timer-display">25:00</div>
+          <div class="timer-btn-row">
+            <button class="timer-btn" id="timer-start-pause">Start</button>
+            <button class="timer-btn secondary" id="timer-reset">Reset</button>
+          </div>
+          <div class="timer-presets">
+            <button class="preset-btn" data-minutes="5" id="preset-5">5m</button>
+            <button class="preset-btn active" data-minutes="25" id="preset-25">25m</button>
+            <button class="preset-btn" data-minutes="45" id="preset-45">45m</button>
+            <button class="preset-btn" data-minutes="60" id="preset-60">60m</button>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+
+      <!-- Daily Streak Widget (inline) -->
+      <a class="streak-widget-inline" id="daily-streak-widget-inline" href="streak-freeze.html" aria-label="Open streak rewards page">
+        <div class="streak-widget-title">
+          <span>Daily streak</span>
+          <span id="streak-count-inline">0/7</span>
+        </div>
+        <div class="streak-jars" aria-label="Weekly honey jar progress">
+          <div class="streak-jar"><span class="jar-icon"></span><span>Mon</span></div>
+          <div class="streak-jar"><span class="jar-icon"></span><span>Tue</span></div>
+          <div class="streak-jar"><span class="jar-icon"></span><span>Wed</span></div>
+          <div class="streak-jar"><span class="jar-icon"></span><span>Thu</span></div>
+          <div class="streak-jar"><span class="jar-icon"></span><span>Fri</span></div>
+          <div class="streak-jar"><span class="jar-icon"></span><span>Sat</span></div>
+          <div class="streak-jar"><span class="jar-icon"></span><span>Sun</span></div>
+        </div>
+      </a>
+
+    </div><!-- end streak-ideas-container -->
 
     <!-- Ideas Notepad -->
     <section class="ideas-section">
@@ -295,7 +342,7 @@
       <div class="ideas-input-row">
         <input type="text" id="idea-input" class="idea-input" placeholder="What's on your mind?" maxlength="200" autocomplete="off">
         <button class="idea-add-btn" id="idea-add-btn" aria-label="Add idea">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="[...]
         </button>
       </div>
       <ul id="ideas-list" class="ideas-list"></ul>
@@ -322,20 +369,7 @@
       </div>
       <div class="shop-items">
 
-        <!-- Item: Scrolling -->
-        <div class="shop-item" id="shop-item-scroll">
-          <div class="item-emoji">📱</div>
-          <div class="item-info">
-            <div class="item-name">15 min scrolling</div>
-            <div class="item-desc">Take a guilt-free social media break</div>
-          </div>
-          <div class="item-right">
-            <div class="item-cost"><span class="cost-num">5</span> 🍯</div>
-            <button class="buy-btn" id="buy-scroll" data-cost="5" data-item="scroll">Buy</button>
-          </div>
-        </div>
-
-        <!-- Item: Sweet snack -->
+        <!-- Item: Sweet snack (now first) -->
         <div class="shop-item" id="shop-item-snack">
           <div class="item-emoji">🍪</div>
           <div class="item-info">
@@ -345,6 +379,19 @@
           <div class="item-right">
             <div class="item-cost"><span class="cost-num">3</span> 🍯</div>
             <button class="buy-btn" id="buy-snack" data-cost="3" data-item="snack">Buy</button>
+          </div>
+        </div>
+
+        <!-- Item: Scrolling (changed to 15 min, now second) -->
+        <div class="shop-item" id="shop-item-scroll">
+          <div class="item-emoji">📱</div>
+          <div class="item-info">
+            <div class="item-name">15 min scrolling</div>
+            <div class="item-desc">Take a guilt-free social media break</div>
+          </div>
+          <div class="item-right">
+            <div class="item-cost"><span class="cost-num">5</span> 🍯</div>
+            <button class="buy-btn" id="buy-scroll" data-cost="5" data-item="scroll">Buy</button>
           </div>
         </div>
 
@@ -364,26 +411,6 @@
       </div><!-- end shop-items -->
     </div><!-- end shop-modal -->
   </div><!-- end shop-overlay -->
-
-
-  <!-- ══════════════════════════════════════════
-       DAILY STREAK WIDGET
-  ══════════════════════════════════════════ -->
-  <a class="streak-widget" id="daily-streak-widget" href="streak-freeze.html" aria-label="Open streak rewards page">
-    <div class="streak-widget-title">
-      <span>Daily streak</span>
-      <span id="streak-count">0/7</span>
-    </div>
-    <div class="streak-jars" aria-label="Weekly honey jar progress">
-      <div class="streak-jar"><span class="jar-icon"></span><span>Mon</span></div>
-      <div class="streak-jar"><span class="jar-icon"></span><span>Tue</span></div>
-      <div class="streak-jar"><span class="jar-icon"></span><span>Wed</span></div>
-      <div class="streak-jar"><span class="jar-icon"></span><span>Thu</span></div>
-      <div class="streak-jar"><span class="jar-icon"></span><span>Fri</span></div>
-      <div class="streak-jar"><span class="jar-icon"></span><span>Sat</span></div>
-      <div class="streak-jar"><span class="jar-icon"></span><span>Sun</span></div>
-    </div>
-  </a>
 
   <script src="app.js" type="module"></script>
 </body>

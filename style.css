@@ -492,3 +492,36 @@ input { width: 100%; min-width: 0; border: 0; background: transparent; outline: 
   box-shadow: var(--shadow);
   margin-top: 12px;
 }
+.streak-widget-inline .jar-icon {
+  display: block;
+  width: 20px;
+  height: 28px;
+  border-radius: 6px 6px 9px 9px;
+  background: #d5d5cc;
+  border: 2px solid #b7b7ad;
+  position: relative;
+  overflow: hidden;
+}
+
+.streak-widget-inline .jar-icon::before {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: 3px;
+  right: 3px;
+  height: 8px;
+  border-radius: 3px;
+  background: #99998f;
+}
+
+.streak-widget-inline .jar-icon::after {
+  content: '';
+  position: absolute;
+  left: 2px;
+  right: 2px;
+  bottom: 2px;
+  height: 0;
+  border-radius: 5px;
+  background: linear-gradient(#ffd86b, var(--honey));
+  transition: height 0.25s ease;
+}

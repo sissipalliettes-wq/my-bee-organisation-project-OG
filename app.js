@@ -38,6 +38,7 @@ let isTimerRunning = false;
 let scrollSeconds = 0;
 let scrollInterval = null;
 let speechTimeout = null;
+let isRouletteSpinning = false;
 
 function getStreakState() {
   const currentWeek = weekKey();
@@ -302,6 +303,99 @@ function buyItem(item, cost) {
   }
 }
 
+function openRoulette() {
+  if (isRouletteSpinning) return;
+  
+  const activeTasks = tasks.filter(t => !t.done);
+  
+  if (activeTasks.length === 0) {
+    const modal = $('#roulette-modal');
+    const segments = $('#roulette-segments');
+    segments.innerHTML = '<div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; width: 80%; color: var(--muted); font-size: 1.1rem;"><div class="roulette-empty-message-emoji">🍯</div><div class="roulette-empty-message">No tasks in the hive yet! 🍯</div></div>';
+    $('#roulette-spin-btn').disabled = true;
+    $('#roulette-overlay').classList.remove('hidden');
+    return;
+  }
+
+  createRouletteWheel(activeTasks);
+  $('#roulette-overlay').classList.remove('hidden');
+  $('#roulette-spin-btn').disabled = false;
+}
+
+function closeRoulette() {
+  $('#roulette-overlay').classList.add('hidden');
+  $('#roulette-segments').innerHTML = '';
+}
+
+function createRouletteWheel(taskList) {
+  const segments = $('#roulette-segments');
+  segments.innerHTML = '';
+  const count = taskList.length;
+  const anglePerSegment = 360 / count;
+
+  taskList.forEach((task, i) => {
+    const segment = document.createElement('div');
+    segment.className = 'roulette-segment';
+    segment.style.transform = `rotate(${i * anglePerSegment}deg)`;
+    
+    const isLightSegment = i % 2 === 0;
+    segment.style.backgroundColor = isLightSegment ? 'rgba(111, 143, 86, 0.15)' : '#6f8f56';
+    segment.style.color = isLightSegment ? '#2f3328' : 'white';
+    segment.style.clip = `polygon(0% 0%, 100% ${50 - anglePerSegment / 2}%, 100% ${50 + anglePerSegment / 2}%, 0% 100%)`;
+    
+    const text = document.createElement('span');
+    text.textContent = task.text.substring(0, 20);
+    text.style.transform = `rotate(${anglePerSegment / 2}deg)`;
+    segment.appendChild(text);
+    
+    segments.appendChild(segment);
+  });
+}
+
+function spinRoulette() {
+  if (isRouletteSpinning) return;
+  
+  const activeTasks = tasks.filter(t => !t.done);
+  if (activeTasks.length === 0) return;
+
+  isRouletteSpinning = true;
+  $('#roulette-spin-btn').disabled = true;
+  
+  const wheel = $('#roulette-wheel');
+  const spins = 5 + Math.random() * 3;
+  const randomIndex = Math.floor(Math.random() * activeTasks.length);
+  const anglePerSegment = 360 / activeTasks.length;
+  const finalAngle = spins * 360 + (randomIndex * anglePerSegment);
+
+  wheel.style.transition = 'none';
+  wheel.style.transform = 'rotate(0deg)';
+
+  setTimeout(() => {
+    wheel.style.transition = `transform ${2.5 + Math.random() * 0.5}s cubic-bezier(0.17, 0.67, 0.12, 0.98)`;
+    wheel.style.transform = `rotate(${finalAngle}deg)`;
+
+    setTimeout(() => {
+      showPlankAnimation(activeTasks[randomIndex]);
+      isRouletteSpinning = false;
+      $('#roulette-spin-btn').disabled = false;
+    }, 3000);
+  }, 50);
+}
+
+function showPlankAnimation(task) {
+  const plank = $('#prop-plank');
+  $('#plank-text').textContent = task.text;
+  plank.classList.remove('hidden');
+  plank.classList.add('show-animation');
+  showSpeech(`Bzzle picked: ${task.text} 🎡`);
+  celebrateBee();
+
+  setTimeout(() => {
+    plank.classList.remove('show-animation');
+    plank.classList.add('hidden');
+  }, 7000);
+}
+
 function wireMainPage() {
   if (!$('#task-form')) return;
 
@@ -351,6 +445,19 @@ function wireMainPage() {
   });
   $$('.buy-btn').forEach((button) => button.addEventListener('click', () => buyItem(button.dataset.item, Number(button.dataset.cost))));
 
+  // Roulette button
+  $('#roulette-btn').addEventListener('click', openRoulette);
+  $('#roulette-close').addEventListener('click', closeRoulette);
+  $('#roulette-spin-btn').addEventListener('click', spinRoulette);
+  $('#roulette-overlay').addEventListener('click', (event) => {
+    if (event.target.id === 'roulette-overlay') closeRoulette();
+  });
+
+  // Calendar button
+  $('#calendar-btn').addEventListener('click', () => {
+    window.location.href = 'calendar.html';
+  });
+
   renderTasks();
   renderIdeas();
   renderTimer();
@@ -381,7 +488,7 @@ function wireFreezePage() {
     count.textContent = state.freezes;
     claimButton.disabled = claimed;
     beehive.disabled = claimed;
-    status.textContent = claimed ? 'You already opened the beehive this week. Come back next week!' : 'Open the beehive to claim this week’s streak freeze.';
+    status.textContent = claimed ? 'You already opened the beehive this week. Come back next week!' : 'Open the beehive to claim this week's streak freeze.';
   };
 
   const claim = () => {

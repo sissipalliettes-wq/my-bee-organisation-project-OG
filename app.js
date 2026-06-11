@@ -304,8 +304,7 @@ function buyItem(item, cost) {
   }
 }
 
-// 1. Tell the browser that the wheel is NOT spinning when the page first loads
-let isRouletteSpinning = false; 
+
 
 // 2. The corrected function to OPEN the popup window
 function openRoulette() {

@@ -481,3 +481,14 @@ input { width: 100%; min-width: 0; border: 0; background: transparent; outline: 
   .center-panel { min-height: 620px; }
   .streak-widget { position: sticky; margin: 0 14px 14px auto; }
 }
+.streak-widget-inline {
+  display: block;
+  padding: 12px;
+  border-radius: 24px;
+  text-decoration: none;
+  color: var(--leaf-dark);
+  background: linear-gradient(145deg, rgba(255,248,225,0.96), rgba(229,238,216,0.96));
+  border: 1px solid rgba(111,143,86,0.22);
+  box-shadow: var(--shadow);
+  margin-top: 12px;
+}

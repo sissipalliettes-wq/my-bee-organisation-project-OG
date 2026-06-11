@@ -180,7 +180,8 @@ function deleteTask(id) {
 
 function renderIdeas() {
   const list = $('#ideas-list');
-  list.innerHTML = '';
+  if (!list) return;
+list.innerHTML = '';
   ideas.forEach((idea) => {
     const li = document.createElement('li');
     li.className = 'idea-item';

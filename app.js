@@ -472,16 +472,20 @@ function wireMainPage() {
 
   $('#shop-btn').addEventListener('click', openShop);
   $('#shop-close-btn').addEventListener('click', closeShop);
-  $('#shop-overlay').addEventListener('click', (event) => {
+ // Shop button safety shield
+  $('#shop-overlay')?.addEventListener('click', (event) => {
     if (event.target.id === 'shop-overlay') closeShop();
   });
-  $$('.buy-btn').forEach((button) => button.addEventListener('click', () => buyItem(button.dataset.item, Number(button.dataset.cost))));
+  
+  $$('.buy-btn').forEach((button) => {
+    button.addEventListener('click', () => buyItem(button.dataset.item, Number(button.dataset.cost)));
+  });
 
-  // Roulette button
-  $('#roulette-btn').addEventListener('click', openRoulette);
-  $('#roulette-close').addEventListener('click', closeRoulette);
-  $('#roulette-spin-btn').addEventListener('click', spinRoulette);
-  $('#roulette-overlay').addEventListener('click', (event) => {
+  // Roulette button safety shields
+  $('#roulette-btn')?.addEventListener('click', openRoulette);
+  $('#roulette-close')?.addEventListener('click', closeRoulette);
+  $('#roulette-spin-btn')?.addEventListener('click', spinRoulette);
+  $('#roulette-overlay')?.addEventListener('click', (event) => {
     if (event.target.id === 'roulette-overlay') closeRoulette();
   });
 

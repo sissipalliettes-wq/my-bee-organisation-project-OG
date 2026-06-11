@@ -74,12 +74,12 @@ function saveStreakState(state) {
 }
 
 function renderStreakWidget() {
-  const widget = $('#daily-streak-widget');
+  const widget = $('#daily-streak-widget-inline');
   if (!widget) return;
   const state = getStreakState();
-  const jars = $$('#daily-streak-widget .streak-jar');
+  const jars = $$('#daily-streak-widget-inline .streak-jar');
   jars.forEach((jar, index) => jar.classList.toggle('logged', state.loggedDays.includes(index)));
-  const count = $('#streak-count');
+  const count = $('#streak-count-inline');
   if (count) count.textContent = `${state.loggedDays.length}/7`;
 }
 

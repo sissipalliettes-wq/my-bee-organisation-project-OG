@@ -79,8 +79,8 @@ button { cursor: pointer; }
 .search-icon { width: 18px; color: var(--leaf); }
 input { width: 100%; min-width: 0; border: 0; background: transparent; outline: none; color: var(--ink); }
 .clear-search-btn { border: 0; background: transparent; color: var(--muted); font-size: 1.2rem; }
-.filter-tabs { display: flex; gap: 8px; margin-top: 14px; }
-.filter-tab, .timer-btn, .preset-btn, .buy-btn, .submit-btn, .idea-add-btn, .shop-btn, .freeze-claim-btn, .back-home-btn {
+.filter-tabs { display: flex; gap: 8px; margin-top: 14px; align-items: center; }
+.filter-tab, .timer-btn, .preset-btn, .buy-btn, .submit-btn, .idea-add-btn, .shop-btn, .freeze-claim-btn, .back-home-btn, .task-roulette-btn {
   border: 0;
   border-radius: 999px;
   background: #e8eddd;
@@ -89,9 +89,11 @@ input { width: 100%; min-width: 0; border: 0; background: transparent; outline: 
   font-weight: 700;
   transition: transform 0.15s ease, opacity 0.15s ease, background 0.15s ease;
 }
-.filter-tab:hover, .timer-btn:hover, .preset-btn:hover, .buy-btn:hover, .submit-btn:hover, .idea-add-btn:hover, .shop-btn:hover, .freeze-claim-btn:hover, .back-home-btn:hover { transform: translateY(-1px); }
+.filter-tab:hover, .timer-btn:hover, .preset-btn:hover, .buy-btn:hover, .submit-btn:hover, .idea-add-btn:hover, .shop-btn:hover, .freeze-claim-btn:hover, .back-home-btn:hover, .task-roulette-btn:hover { transform: translateY(-1px); }
 .filter-tab.active, .timer-btn, .preset-btn.active, .buy-btn, .submit-btn, .idea-add-btn, .freeze-claim-btn, .back-home-btn { background: var(--leaf); color: white; }
 .timer-btn.secondary { background: #efe4c8; color: var(--brown); }
+.task-roulette-btn { margin-left: auto; width: 38px; height: 38px; display: grid; place-items: center; padding: 0; font-size: 1rem; box-shadow: 0 10px 24px rgba(88, 64, 31, 0.1); }
+.task-roulette-message { margin-top: 10px; color: var(--brown); font-size: 0.85rem; font-weight: 700; text-align: right; }
 .submit-btn, .idea-add-btn { width: 42px; height: 42px; display: grid; place-items: center; padding: 0; flex: 0 0 auto; }
 .submit-btn svg, .idea-add-btn svg { width: 20px; }
 
@@ -113,6 +115,7 @@ input { width: 100%; min-width: 0; border: 0; background: transparent; outline: 
 .task-checkbox { width: 20px; height: 20px; accent-color: var(--leaf); }
 .task-text { flex: 1; overflow-wrap: anywhere; }
 .task-item.completed .task-text { color: var(--muted); text-decoration: line-through; }
+.task-item.roulette-selected { animation: rouletteGlow 3s ease-in-out; }
 .delete-task, .delete-idea { border: 0; background: transparent; color: #b07050; font-size: 1.05rem; }
 
 .center-panel { position: relative; min-height: 100vh; display: grid; place-items: center; padding: 32px; }
@@ -189,6 +192,54 @@ input { width: 100%; min-width: 0; border: 0; background: transparent; outline: 
 .idea-item { align-items: flex-start; }
 .idea-text { flex: 1; overflow-wrap: anywhere; }
 
+.task-roulette-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(47, 51, 40, 0.34);
+  backdrop-filter: blur(6px);
+}
+.task-roulette-modal {
+  width: min(420px, 100%);
+  padding: 24px;
+  border-radius: 30px;
+  text-align: center;
+  background: linear-gradient(145deg, rgba(255, 248, 225, 0.98), rgba(229, 238, 216, 0.98));
+  border: 1px solid rgba(111, 143, 86, 0.22);
+  box-shadow: 0 28px 80px rgba(47, 51, 40, 0.24);
+}
+.task-roulette-icon {
+  width: 54px;
+  height: 54px;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 10px;
+  border-radius: 50%;
+  background: var(--leaf);
+  color: white;
+  font-size: 1.7rem;
+  box-shadow: var(--shadow);
+}
+.task-roulette-title { margin: 0; color: var(--leaf-dark); font-family: Lora, serif; font-size: 1.55rem; }
+.task-roulette-hint { margin: 8px 0 18px; color: var(--muted); font-size: 0.9rem; }
+.task-roulette-wheel {
+  min-height: 74px;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  border-radius: 22px;
+  background: #fffdf5;
+  border: 1px solid rgba(111, 143, 86, 0.18);
+  color: var(--leaf-dark);
+  font-weight: 900;
+  box-shadow: inset 0 0 0 3px rgba(242, 170, 34, 0.12);
+}
+.task-roulette-wheel.is-spinning { animation: roulettePulse 0.42s ease-in-out infinite alternate; }
+.task-roulette-wheel span { overflow-wrap: anywhere; }
+
 .shop-overlay {
   position: fixed;
   inset: 0;
@@ -261,6 +312,11 @@ input { width: 100%; min-width: 0; border: 0; background: transparent; outline: 
 @keyframes waveL { 50% { transform: rotate(14deg); } }
 @keyframes waveR { 50% { transform: rotate(-14deg); } }
 @keyframes sparkle { to { transform: scale(1.12); opacity: 0.7; } }
+@keyframes roulettePulse { to { transform: scale(1.015); box-shadow: inset 0 0 0 3px rgba(242, 170, 34, 0.22), 0 14px 30px rgba(88, 64, 31, 0.12); } }
+@keyframes rouletteGlow {
+  0%, 100% { box-shadow: none; border-color: rgba(111, 143, 86, 0.14); background: rgba(255, 253, 245, 0.88); }
+  12%, 82% { box-shadow: 0 0 0 3px rgba(255, 216, 107, 0.42), 0 0 26px rgba(242, 170, 34, 0.5); border-color: rgba(242, 170, 34, 0.7); background: rgba(255, 248, 225, 0.98); }
+}
 
 @media (max-width: 980px) {
   body { grid-template-columns: 1fr; overflow: auto; }

@@ -46,7 +46,9 @@
         <button class="filter-tab active" data-filter="all" id="filter-all">All</button>
         <button class="filter-tab" data-filter="active" id="filter-active">Active</button>
         <button class="filter-tab" data-filter="completed" id="filter-completed">Done</button>
+        <button class="task-roulette-btn" id="task-roulette-btn" type="button" aria-label="Pick a task with Task Roulette" title="Task Roulette">🎲</button>
       </div>
+      <div class="task-roulette-message hidden" id="task-roulette-message" role="status" aria-live="polite">No tasks to choose from</div>
     </section>
 
     <main class="tasks-area">
@@ -364,6 +366,20 @@
       </div><!-- end shop-items -->
     </div><!-- end shop-modal -->
   </div><!-- end shop-overlay -->
+
+  <!-- ══════════════════════════════════════════
+       TASK ROULETTE MODAL
+  ══════════════════════════════════════════ -->
+  <div class="task-roulette-overlay hidden" id="task-roulette-overlay" aria-hidden="true">
+    <section class="task-roulette-modal" role="dialog" aria-modal="true" aria-label="Task Roulette">
+      <div class="task-roulette-icon" aria-hidden="true">🎲</div>
+      <h2 class="task-roulette-title">Task Roulette</h2>
+      <p class="task-roulette-hint">Let the wheel choose your next focus.</p>
+      <div class="task-roulette-wheel" aria-live="polite">
+        <span id="task-roulette-current">Spinning…</span>
+      </div>
+    </section>
+  </div>
 
 
   <!-- ══════════════════════════════════════════

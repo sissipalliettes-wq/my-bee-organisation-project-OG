@@ -38,6 +38,9 @@ let isTimerRunning = false;
 let scrollSeconds = 0;
 let scrollInterval = null;
 let speechTimeout = null;
+let rouletteTimeouts = [];
+let rouletteMessageTimeout = null;
+let isRouletteSpinning = false;
 
 function getStreakState() {
   const currentWeek = weekKey();
@@ -127,6 +130,7 @@ function renderTasks() {
   filtered.forEach((task) => {
     const li = document.createElement('li');
     li.className = `task-item${task.done ? ' completed' : ''}`;
+    li.dataset.taskId = task.id;
     li.innerHTML = `
       <input class="task-checkbox" type="checkbox" ${task.done ? 'checked' : ''} aria-label="Mark task done">
       <span class="task-text"></span>
@@ -175,6 +179,88 @@ function deleteTask(id) {
   tasks = tasks.filter((task) => task.id !== id);
   saveTasks();
   renderTasks();
+}
+
+function getRouletteCandidates() {
+  return tasks.filter((task) => {
+    const matchesFilter = currentFilter === 'all' || (currentFilter === 'completed' ? task.done : !task.done);
+    const matchesSearch = task.text.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesFilter && matchesSearch && !task.done;
+  });
+}
+
+function showRouletteMessage(message) {
+  const messageEl = $('#task-roulette-message');
+  if (!messageEl) return;
+  messageEl.textContent = message;
+  messageEl.classList.remove('hidden');
+  clearTimeout(rouletteMessageTimeout);
+  rouletteMessageTimeout = setTimeout(() => messageEl.classList.add('hidden'), 2200);
+}
+
+function closeTaskRoulette() {
+  const overlay = $('#task-roulette-overlay');
+  const wheel = $('.task-roulette-wheel');
+  rouletteTimeouts.forEach((timeoutId) => clearTimeout(timeoutId));
+  rouletteTimeouts = [];
+  isRouletteSpinning = false;
+  if (overlay) {
+    overlay.classList.add('hidden');
+    overlay.setAttribute('aria-hidden', 'true');
+  }
+  if (wheel) wheel.classList.remove('is-spinning');
+}
+
+function highlightRouletteTask(taskId) {
+  const item = $$('#tasks-list .task-item').find((taskItem) => taskItem.dataset.taskId === taskId);
+  if (!item) return;
+  item.classList.remove('roulette-selected');
+  void item.offsetWidth;
+  item.classList.add('roulette-selected');
+  setTimeout(() => item.classList.remove('roulette-selected'), 3000);
+}
+
+function openTaskRoulette() {
+  if (isRouletteSpinning) return;
+  const candidates = getRouletteCandidates();
+  if (!candidates.length) {
+    showRouletteMessage('No tasks to choose from');
+    return;
+  }
+
+  const selectedTask = candidates[Math.floor(Math.random() * candidates.length)];
+  const overlay = $('#task-roulette-overlay');
+  const current = $('#task-roulette-current');
+  const wheel = $('.task-roulette-wheel');
+  if (!overlay || !current || !wheel) return;
+
+  isRouletteSpinning = true;
+  clearTimeout(rouletteMessageTimeout);
+  $('#task-roulette-message')?.classList.add('hidden');
+  overlay.classList.remove('hidden');
+  overlay.setAttribute('aria-hidden', 'false');
+  wheel.classList.add('is-spinning');
+
+  const delays = [45, 55, 65, 80, 100, 125, 155, 190, 235, 285, 340, 410];
+  let elapsed = 0;
+  delays.forEach((delay, index) => {
+    elapsed += delay;
+    const timeoutId = setTimeout(() => {
+      const spinTask = index === delays.length - 1 ? selectedTask : candidates[index % candidates.length];
+      current.textContent = spinTask.text;
+    }, elapsed);
+    rouletteTimeouts.push(timeoutId);
+  });
+
+  const finishTimeout = setTimeout(() => {
+    current.textContent = selectedTask.text;
+    const closeTimeout = setTimeout(() => {
+      closeTaskRoulette();
+      highlightRouletteTask(selectedTask.id);
+    }, 500);
+    rouletteTimeouts.push(closeTimeout);
+  }, elapsed + 220);
+  rouletteTimeouts.push(finishTimeout);
 }
 
 function renderIdeas() {
@@ -333,6 +419,7 @@ function wireMainPage() {
     saveTasks();
     renderTasks();
   });
+  $('#task-roulette-btn').addEventListener('click', openTaskRoulette);
 
   $('#idea-add-btn').addEventListener('click', addIdeaFromInput);
   $('#idea-input').addEventListener('keydown', (event) => {

@@ -221,7 +221,7 @@ input { width: 100%; min-width: 0; border: 0; background: transparent; outline: 
 
 .streak-widget {
   position: fixed;
-  right: 18px;
+  right: calc(340px + 18px);
   bottom: 18px;
   z-index: 10;
   width: 218px;
@@ -266,5 +266,5 @@ input { width: 100%; min-width: 0; border: 0; background: transparent; outline: 
   body { grid-template-columns: 1fr; overflow: auto; }
   .sidebar { height: auto; min-height: unset; }
   .center-panel { min-height: 620px; }
-  .streak-widget { position: sticky; margin: 0 14px 14px auto; }
+  .streak-widget { position: sticky; right: 18px; margin: 0 14px 14px auto; }
 }

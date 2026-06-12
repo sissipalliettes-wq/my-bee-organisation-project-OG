@@ -41,6 +41,8 @@ let speechTimeout = null;
 let rouletteTimeouts = [];
 let rouletteMessageTimeout = null;
 let isRouletteSpinning = false;
+let activeTaskDetailsId = null;
+let selectedTaskColor = '';
 
 function getStreakState() {
   const currentWeek = weekKey();
@@ -131,12 +133,23 @@ function renderTasks() {
     const li = document.createElement('li');
     li.className = `task-item${task.done ? ' completed' : ''}`;
     li.dataset.taskId = task.id;
+    if (task.color) li.style.backgroundColor = task.color;
     li.innerHTML = `
       <input class="task-checkbox" type="checkbox" ${task.done ? 'checked' : ''} aria-label="Mark task done">
       <span class="task-text"></span>
+      <span class="task-due-label hidden"></span>
       <button class="delete-task" aria-label="Delete task">×</button>
     `;
     li.querySelector('.task-text').textContent = task.text;
+    const dueLabel = formatTaskDueLabel(task);
+    const dueLabelEl = li.querySelector('.task-due-label');
+    dueLabelEl.textContent = dueLabel;
+    dueLabelEl.classList.toggle('hidden', !dueLabel);
+    li.addEventListener('dblclick', (event) => {
+      if (event.target.closest('.delete-task')) return;
+      event.preventDefault();
+      openTaskDetails(task.id);
+    });
     li.querySelector('.task-checkbox').addEventListener('change', (event) => toggleTask(task.id, event.target.checked));
     li.querySelector('.delete-task').addEventListener('click', () => deleteTask(task.id));
     list.appendChild(li);
@@ -179,6 +192,61 @@ function deleteTask(id) {
   tasks = tasks.filter((task) => task.id !== id);
   saveTasks();
   renderTasks();
+}
+
+function formatTaskTime(time) {
+  if (!time) return '';
+  const [hourValue, minute = '00'] = time.split(':');
+  const hour = Number(hourValue);
+  const suffix = hour >= 12 ? 'PM' : 'AM';
+  const hour12 = hour % 12 || 12;
+  return `${hour12}:${minute} ${suffix}`;
+}
+
+function formatTaskDueLabel(task) {
+  if (!task.dueDate) return '';
+  const [year, month, day] = task.dueDate.split('-').map(Number);
+  const dueDate = new Date(year, month - 1, day);
+  const today = new Date();
+  const isToday = dueDate.getFullYear() === today.getFullYear() && dueDate.getMonth() === today.getMonth() && dueDate.getDate() === today.getDate();
+  if (isToday) return task.dueTime ? formatTaskTime(task.dueTime) : 'Today';
+  return dueDate.toLocaleDateString(undefined, { day: '2-digit', month: 'short' });
+}
+
+function updateTaskColorSelection() {
+  $$('.task-color-swatch').forEach((swatch) => {
+    swatch.classList.toggle('is-selected', swatch.dataset.color === selectedTaskColor);
+  });
+}
+
+function openTaskDetails(taskId) {
+  const task = tasks.find((item) => item.id === taskId);
+  if (!task) return;
+  activeTaskDetailsId = taskId;
+  selectedTaskColor = task.color || '';
+  $('#task-due-date').value = task.dueDate || '';
+  $('#task-due-time').value = task.dueTime || '';
+  updateTaskColorSelection();
+  $('#task-details-overlay').classList.remove('hidden');
+  $('#task-details-overlay').setAttribute('aria-hidden', 'false');
+}
+
+function closeTaskDetails() {
+  activeTaskDetailsId = null;
+  selectedTaskColor = '';
+  $('#task-details-overlay')?.classList.add('hidden');
+  $('#task-details-overlay')?.setAttribute('aria-hidden', 'true');
+}
+
+function saveTaskDetails() {
+  const task = tasks.find((item) => item.id === activeTaskDetailsId);
+  if (!task) return;
+  task.color = selectedTaskColor;
+  task.dueDate = $('#task-due-date').value;
+  task.dueTime = task.dueDate ? $('#task-due-time').value : '';
+  saveTasks();
+  renderTasks();
+  closeTaskDetails();
 }
 
 function getRouletteCandidates() {
@@ -420,6 +488,16 @@ function wireMainPage() {
     renderTasks();
   });
   $('#task-roulette-btn').addEventListener('click', openTaskRoulette);
+  $$('.task-color-swatch').forEach((swatch) => swatch.addEventListener('click', () => {
+    selectedTaskColor = swatch.dataset.color;
+    updateTaskColorSelection();
+  }));
+  $('#task-details-save').addEventListener('click', saveTaskDetails);
+  $('#task-details-cancel').addEventListener('click', closeTaskDetails);
+  $('#task-details-close').addEventListener('click', closeTaskDetails);
+  $('#task-details-overlay').addEventListener('click', (event) => {
+    if (event.target.id === 'task-details-overlay') closeTaskDetails();
+  });
 
   $('#idea-add-btn').addEventListener('click', addIdeaFromInput);
   $('#idea-input').addEventListener('keydown', (event) => {

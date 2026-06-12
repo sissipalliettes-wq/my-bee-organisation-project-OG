@@ -115,6 +115,7 @@ input { width: 100%; min-width: 0; border: 0; background: transparent; outline: 
 .task-checkbox { width: 20px; height: 20px; accent-color: var(--leaf); }
 .task-text { flex: 1; overflow-wrap: anywhere; }
 .task-item.completed .task-text { color: var(--muted); text-decoration: line-through; }
+.task-due-label { flex: 0 0 auto; max-width: 86px; color: var(--brown); font-size: 0.72rem; font-weight: 800; line-height: 1; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .task-item.roulette-selected { animation: rouletteGlow 3s ease-in-out; }
 .delete-task, .delete-idea { border: 0; background: transparent; color: #b07050; font-size: 1.05rem; }
 
@@ -240,6 +241,46 @@ input { width: 100%; min-width: 0; border: 0; background: transparent; outline: 
 .task-roulette-wheel.is-spinning { animation: roulettePulse 0.42s ease-in-out infinite alternate; }
 .task-roulette-wheel span { overflow-wrap: anywhere; }
 
+.task-details-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 31;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(47, 51, 40, 0.34);
+  backdrop-filter: blur(6px);
+}
+.task-details-modal {
+  position: relative;
+  width: min(430px, 100%);
+  padding: 24px;
+  border-radius: 30px;
+  background: #fff9e6;
+  border: 1px solid rgba(111, 143, 86, 0.2);
+  box-shadow: 0 28px 80px rgba(47, 51, 40, 0.24);
+}
+.task-details-title { margin: 0 34px 22px 0; color: var(--leaf-dark); font-family: Lora, serif; font-size: 1.55rem; }
+.task-details-close { position: absolute; top: 18px; right: 18px; border: 0; background: #efe4c8; color: var(--brown); width: 34px; height: 34px; border-radius: 50%; font-weight: 800; font-size: 1.1rem; }
+.task-details-save, .task-details-cancel { border: 0; border-radius: 999px; background: #e8eddd; color: var(--leaf-dark); padding: 9px 14px; font-weight: 700; transition: transform 0.15s ease, opacity 0.15s ease, background 0.15s ease; }
+.task-details-save:hover, .task-details-cancel:hover { transform: translateY(-1px); }
+.task-details-save { background: var(--leaf); color: white; }
+.task-details-cancel { background: #efe4c8; color: var(--brown); }
+.task-details-field { display: grid; gap: 10px; margin-top: 18px; }
+.task-details-label { color: var(--leaf-dark); font-size: 0.85rem; font-weight: 800; }
+.task-color-swatches { display: flex; align-items: center; gap: 10px; }
+.task-color-swatch { width: 30px; height: 30px; border: 2px solid rgba(111, 143, 86, 0.16); border-radius: 50%; box-shadow: 0 8px 18px rgba(88, 64, 31, 0.1); }
+.task-color-swatch:nth-child(1) { background: #ffdbe8; }
+.task-color-swatch:nth-child(2) { background: #ffe1c2; }
+.task-color-swatch:nth-child(3) { background: #fff3b8; }
+.task-color-swatch:nth-child(4) { background: #dff2d2; }
+.task-color-swatch:nth-child(5) { background: #dcecff; }
+.task-color-swatch:nth-child(6) { background: #eadcff; }
+.task-color-swatch.is-selected { border-color: var(--leaf-dark); box-shadow: 0 0 0 3px rgba(111, 143, 86, 0.22), 0 8px 18px rgba(88, 64, 31, 0.1); }
+.task-due-inputs { display: grid; grid-template-columns: 1fr 0.75fr; gap: 10px; }
+.task-details-input { padding: 10px 12px; border-radius: 999px; background: #fffdf5; border: 1px solid rgba(111, 143, 86, 0.18); }
+.task-details-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px; }
+
 .shop-overlay {
   position: fixed;
   inset: 0;
@@ -295,6 +336,11 @@ input { width: 100%; min-width: 0; border: 0; background: transparent; outline: 
 .streak-jar.logged .jar-icon { border-color: #d89012; background: #ffeab0; }
 .streak-jar.logged .jar-icon::before { background: #8b5520; }
 .streak-jar.logged .jar-icon::after { height: 18px; }
+
+/* Keep the streak card beside the ideas column on wide screens without touching the base widget block. */
+@media (min-width: 981px) {
+  .streak-widget { right: calc(340px + 18px); }
+}
 
 .freeze-page { display: block; overflow: auto; min-height: 100vh; padding: 32px; }
 .freeze-card { width: min(780px, 100%); margin: 0 auto; padding: 28px; border-radius: 32px; background: rgba(255, 249, 230, 0.92); box-shadow: var(--shadow); border: 1px solid rgba(111, 143, 86, 0.2); text-align: center; }
